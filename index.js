@@ -49,13 +49,18 @@ class State {
 class Looper {
     constructor() {
         this.animated = false
+        this.cbs = []
     }
-    start(cb) {
+    addCallbackToLoop(cb) {
+        this.cbs.push(cb)
+    }
+    start() {
         if(!this.animated) {
-            this.cb = cb
             this.animated = true
             this.interval = setInterval(()=>{
-                cb()
+                this.cbs.forEach((cb)=>{
+                    cb()
+                })
             },75)
         }
     }
@@ -67,37 +72,54 @@ class Looper {
     }
     resume() {
         if(!this.animated) {
-            console.log(this.cb)
-            this.start(this.cb)
+            console.log()
+            this.start()
         }
     }
 }
-const img = document.createElement('img')
-const canvas  = document.createElement('canvas')
-const w = window.innerWidth,h = window.innerHeight
-const r = Math.min(w,h)/5
-canvas.width = w
-canvas.height = h
-const ripples = []
-const context = canvas.getContext('2d')
-const render = () => {
-      context.clearRect(0,0,w,h)
-      context.globalAlpha = 0
-      ripples.forEach((ripple,index)=>{
-          ripple.draw(context)
-          ripple.update()
-          if(ripple.stopUpdating()) {
-              ripples.splice(index,1)
-          }
-      })
-      img.src = canvas.toDataURL()
-}
-document.body.appendChild(img)
-window.onmousedown = (event) => {
-    ripples.push(new Ripple(event.offsetX,event.offsetY,r))
-}
+
+const w = window.innerWidth,h=window.innerHeight
+const n = ((document.body.offsetHeight)/h)+1
 const looper = new Looper()
-looper.start(render)
+function createImage(y) {
+    const img = document.createElement('img')
+    const canvas  = document.createElement('canvas')
+    const r = Math.min(w,h)/5
+    canvas.width = w
+    canvas.height = h
+    const ripples = []
+    const context = canvas.getContext('2d')
+    const render = () => {
+        context.clearRect(0,0,w,h)
+        context.globalAlpha = 0
+        ripples.forEach((ripple,index)=>{
+            ripple.draw(context)
+            ripple.update()
+            if(ripple.stopUpdating()) {
+                ripples.splice(index,1)
+            }
+        })
+        img.src = canvas.toDataURL()
+    }
+    img.style.position = 'absolute'
+    img.style.top = y
+    console.log(y)
+    img.style.left = 0
+    document.body.appendChild(img)
+    looper.addCallbackToLoop(render)
+    img.onmousedown = (event) => {
+        console.log(event)
+        ripples.push(new Ripple(event.offsetX,event.offsetY,r))
+        console.log(ripples)
+    }
+}
+var y = 0
+for(var i=0;i<n;i++) {
+    createImage(y)
+    y += h
+}
+looper.start()
+
 var i = 0
 window.onkeydown = (event) => {
     if(event.keyCode == 32) {
