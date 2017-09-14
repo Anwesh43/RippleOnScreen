@@ -40,13 +40,29 @@ class State {
     }
 }
 class Looper {
+    constructor() {
+        this.animated = false
+    }
     start(cb) {
-        this.interval = setInterval(()=>{
-            cb()
-        },50)
+        if(!this.animated) {
+            this.cb = cb
+            this.animated = true
+            this.interval = setInterval(()=>{
+                cb()
+            },50)
+        }
     }
     stop() {
-        clearInterval(this.interval)
+        if(this.animated) {
+            clearInterval(this.interval)
+            this.animated = false
+        }
+    }
+    resume() {
+        if(!this.animated) {
+            console.log(this.cb)
+            this.start(this.cb)
+        }
     }
 }
 const img = document.createElement('img')
@@ -75,3 +91,15 @@ window.onmousedown = (event) => {
 }
 const looper = new Looper()
 looper.start(render)
+var i = 0
+window.onkeydown = (event) => {
+    if(event.keyCode == 32) {
+        if(i%2 == 0) {
+            looper.stop()
+        }
+        else {
+            looper.resume()
+        }
+        i++
+    }
+}
