@@ -39,6 +39,16 @@ class State {
         return this.deg == 0
     }
 }
+class Looper {
+    start(cb) {
+        this.interval = setInterval(()=>{
+            cb()
+        },50)
+    }
+    stop() {
+        clearInterval(this.interval)
+    }
+}
 const img = document.createElement('img')
 const canvas  = document.createElement('canvas')
 const w = window.innerWidth,h = window.innerHeight
@@ -56,3 +66,6 @@ const render = () => {
       img.src = canvas.toDataURL()
 }
 document.appendChild(img)
+const looper = new Looper()
+looper.start(render)
+looper.stop()
