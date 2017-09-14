@@ -58,14 +58,20 @@ canvas.height = h
 const ripples = []
 const context = canvas.getContext('2d')
 const render = () => {
-      context.clearRect(w,h)
+      context.clearRect(0,0,w,h)
       context.globalAlpha = 0
-      ripples.forEach((ripple)=>{
+      ripples.forEach((ripple,index)=>{
           ripple.draw(context)
+          ripple.update()
+          if(ripple.stopUpdating()) {
+              ripples.splice(index,1)
+          }
       })
       img.src = canvas.toDataURL()
 }
-document.appendChild(img)
+document.body.appendChild(img)
+window.onmousedown = (event) => {
+    ripples.push(new Ripple(event.offsetX,event.offsetY,r))
+}
 const looper = new Looper()
 looper.start(render)
-looper.stop()
