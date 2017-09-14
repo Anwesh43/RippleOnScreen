@@ -39,3 +39,20 @@ class State {
         return this.deg == 0
     }
 }
+const img = document.createElement('img')
+const canvas  = document.createElement('canvas')
+const w = window.innerWidth,h = window.innerHeight
+const r = Math.min(w,h)/5
+canvas.width = w
+canvas.height = h
+const ripples = []
+const context = canvas.getContext('2d')
+const render = () => {
+      context.clearRect(w,h)
+      context.globalAlpha = 0
+      ripples.forEach((ripple)=>{
+          ripple.draw(context)
+      })
+      img.src = canvas.toDataURL()
+}
+document.appendChild(img)
