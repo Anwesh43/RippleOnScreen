@@ -1,14 +1,21 @@
+const createRandomColor = () => {
+    const r = Math.floor(255*Math.random())
+    const g = Math.floor(255*Math.random())
+    const b = Math.floor(255*Math.random())
+    return `rgb(${r},${g},${b})`
+}
 class Ripple {
     constructor(x,y,r) {
         this.x = x
         this.y = y
         this.r = r
         this.state = new State()
+        this.color = createRandomColor()
     }
     draw(context) {
         context.save()
         context.translate(this.x,this.y)
-        context.strokeStyle = '#9C27B0'
+        context.strokeStyle = this.color
         context.lineWidth = this.r/12
         context.globalAlpha = this.state.scale
         context.beginPath()
@@ -29,7 +36,7 @@ class State {
         this.deg = 0
     }
     update() {
-        this.deg += (2*Math.PI)/30
+        this.deg += (2*Math.PI)/40
         this.scale = Math.abs(Math.sin(this.deg))
         if(this.deg > Math.PI) {
             this.deg = 0
@@ -49,7 +56,7 @@ class Looper {
             this.animated = true
             this.interval = setInterval(()=>{
                 cb()
-            },50)
+            },75)
         }
     }
     stop() {
